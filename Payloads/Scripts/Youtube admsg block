@@ -1,0 +1,65 @@
+# chrome  web driver must be installed
+
+Install-Module -Name Selenium
+
+Import-Module Selenium
+
+
+$ChromeOptions = New-Object OpenQA.Selenium.Chrome.ChromeOptions
+$ChromeOptions.AddArgument("--start-maximized")  # Maximize the browser window
+$ChromeDriver = New-Object OpenQA.Selenium.Chrome.ChromeDriver($ChromeOptions)
+
+
+$ChromeDriver.Navigate().GoToUrl("https://chrome.google.com/webstore/category/extensions")
+
+
+$SearchBox = $ChromeDriver.FindElementById("searchbox-searchfield")
+$SearchBox.SendKeys("Privacy Badger")
+$SearchBox.SendKeys([OpenQA.Selenium.Keys]::Enter)
+Start-Sleep -Seconds 5  # Wait for the search results to load
+
+
+$ExtensionLink = $ChromeDriver.FindElementByClassName("webstore-aria-label")
+$ExtensionLink.Click()
+Start-Sleep -Seconds 5  # Wait for the extension page to load
+
+$InstallButton = $ChromeDriver.FindElementById("add-to-chrome")
+$InstallButton.Click()
+Start-Sleep -Seconds 5  # Wait for the installation to complete
+
+
+$ChromeDriver.Navigate().GoToUrl("chrome://extensions/")
+
+
+$OptionsPage = $ChromeDriver.Navigate().GoToUrl("chrome-extension://pkehgijcmpdhfbdbbnkijodmdjhbjlgp/options.html")
+Start-Sleep -Seconds 3
+
+
+$AdvancedOptions = $ChromeDriver.FindElementById("advanced-options")
+$AdvancedOptions.Click()
+Start-Sleep -Seconds 3
+
+
+$LearnToBlock = $ChromeDriver.FindElementById("learning")
+$ShowDomains = $ChromeDriver.FindElementById("showDomains")
+$LearnInIncognito = $ChromeDriver.FindElementId("incognito-learning")
+
+$LearnToBlock.Click()
+$ShowDomains.Click()
+$LearnInIncognito.Click()
+
+
+$TrackingDomainsTab = $ChromeDriver.FindElementByLinkText("Tracking Domains")
+$TrackingDomainsTab.Click()
+Start-Sleep -Seconds 3
+
+
+$SearchBox = $ChromeDriver.FindElementById("trackingDomainsTableFilter")
+$SearchBox.SendKeys("youtube")
+Start-Sleep -Seconds 3
+
+$RedBars = $ChromeDriver.FindElementsByClassName("slider")
+$RedBars | ForEach-Object { $_.Click() }
+
+
+$ChromeDriver.Quit()
